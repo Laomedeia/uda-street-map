@@ -1,0 +1,46 @@
+{
+  "name": "uda-street-map",
+  "version": "1.0.0",
+  "description": "a simple street map show",
+  "scripts": {
+    "start": "webpack-dev-server --colors --host 127.0.0.1 --port 8080",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Laomedeia/uda-street-map.git"
+  },
+  "keywords": [
+    "street",
+    "map"
+  ],
+  "author": "neptune",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Laomedeia/uda-street-map/issues"
+  },
+  "homepage": "https://github.com/Laomedeia/uda-street-map#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-lodash": "^3.3.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "copy-webpack-plugin": "^4.2.3",
+    "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "2.1.2",
+    "file-loader": "^1.1.5",
+    "html-webpack-plugin": "^2.30.1",
+    "postcss-loader": "^2.0.8",
+    "style-loader": "^0.19.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4",
+    "webpack-hot-middleware": "^2.20.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "animate.css": "^3.5.2"
+  }
+}
