@@ -1,12 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,  user-scalable=no, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>street Map</title>
+    <link rel="stylesheet" href="./ext/material/material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
+
 <body>
-    
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">我的街区地图</span>
+                <!-- Add spacer, to align navigation to the right -->
+                <div class="mdl-layout-spacer"></div>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">搜索地图热点</span>
+
+            <!-- Simple Textfield -->
+            <div class="mdl-grid mdl-grid--no-spacing" style="max-width:200px">
+                <div class="mdl-cell mdl-cell--8-col mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <input class="mdl-textfield__input" type="text" id="searchInput" data-bind="value: searchTxt, valueUpdate: 'keyup', event: { keyup: searchPress }">
+                        <label class="mdl-textfield__label" for="searchInput">输入一个位置...</label>
+                    </div>
+                </div>
+                <div class="mdl-cell mdl-cell--4-col mdl-cell--2-col-tablet mdl-cell--1-col-phone">
+                    <button data-bind="click: searchEvent" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--fab mdl-button--mini-fab mdl-button--colored">
+                        <i class="material-icons">search</i>
+                    </button>
+                </div>
+            </div>
+
+            <nav class="mdl-navigation" data-bind="foreach: markers">
+                    <a class="mdl-navigation__link" href="javascript:void(0)" data-bind="text: name, click: $root.navItemClick"></a>
+            </nav>
+        </div>
+        <main  class="mdl-layout__content full-screen">
+            <!-- <div class="page-content">
+            </div> -->
+            <div id="container" class="full-screen"></div>
+        </main>
+
+    </div>
+    <script src="./ext/material/material.min.js"></script>
+    <script src="http://webapi.amap.com/maps?v=1.4.3&key=d50a5aa255973202dff2d5613fb942f6"></script>
 <script type="text/javascript" src="bundle.js"></script></body>
+
 </html>

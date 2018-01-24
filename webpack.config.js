@@ -39,7 +39,8 @@ module.exports = {
       template: "./index.html"
     }),
     new CopyWebpackPlugin([
-      { from: 'src/images', to: 'src/images' }
+      { from: 'src/images', to: 'src/images' },
+      { from: 'src/ext', to: 'ext' }
     ]),
     new webpack.HotModuleReplacementPlugin(),
   ]
