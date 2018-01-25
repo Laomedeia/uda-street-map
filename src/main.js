@@ -1,13 +1,25 @@
 import ko from "knockout";
+import axios from 'axios';
 import mymap from "./js/mymap.js";
 import _ from "lodash";
 import "./css/app.css";
+
+const map_weather_url = "http://restapi.amap.com/v3/weather/weatherInfo";
+const map_s_key = "7478aa41ae36d35f3f8693d0452cd6ec";
 
 //兴趣点名称数组
 let poiArray = [];
 // id-marker对象
 let markerObj = {};
-
+// info window
+let infoWindow = new AMap.InfoWindow({
+    offset: new AMap.Pixel(5, -30)
+});
+/**
+ * @description  搜索兴趣点
+ * @param {any} ko 
+ * @param {any} vm 
+ */
 const searchPoi = function (ko, vm) {
     //搜索一些兴趣点
     AMap.service(["AMap.PlaceSearch"], function () {
@@ -20,7 +32,6 @@ const searchPoi = function (ko, vm) {
         });
         //关键字查询
         placeSearch.search("", function (status, result) {
-            console.log(mymap.getZoom());
             mymap.setZoom(11);
             if (result && result.poiList && result.poiList.pois) {
                 // 获取地图上所有marker对象
@@ -30,6 +41,32 @@ const searchPoi = function (ko, vm) {
                     for (const marker of allMarkers) {
                         let markerId = poi.id;
                         if (markerId === marker.Xf) {
+                            // 调用Web API进行天气查询
+                            let adcode = poi.adcode;
+                            let markerName = poi.name;
+                            let address = poi.address;
+                            axios.get(map_weather_url, {
+                                    params: {
+                                        key: map_s_key,
+                                        city: adcode,
+                                        extensions: "base",
+                                        output: "JSON"
+                                    }
+                                })
+                                .then(function (response) {
+                                    let weatherInfo = response.data.lives[0];
+                                    let temperature = weatherInfo.temperature;
+                                    let weather = weatherInfo.weather;
+                                    let content = `<div><span style="color: #800080;">${markerName}</span><br/><span>地址: ${address}</span><br/><span>当前气温: 摄氏${temperature}度/${weather}</span></div>`;
+                                    marker.content = content;
+                                    //bind click event for marker
+                                    marker.on('click', markerClick);
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                    return `<div style="color: red;">抱歉，没有查询到相关天气信息</div>`;
+                                });
+                            // 设置对象
                             markerObj[markerId] = marker;
                         }
                     }
@@ -39,7 +76,15 @@ const searchPoi = function (ko, vm) {
             }
         });
     })
+}
 
+/**
+ * @description  marker点击事件
+ * @param {any} e 
+ */
+let markerClick = function (e) {
+    infoWindow.setContent(e.target.content);
+    infoWindow.open(mymap, e.target.getPosition());
 }
 
 /**
@@ -50,36 +95,18 @@ const searchPoi = function (ko, vm) {
 let ViewModel = function (searchInput, poiArray) {
     this.searchTxt = ko.observable(searchInput);
     this.markers = ko.observableArray(poiArray);
-
     // 搜索按钮点击事件
     this.searchEvent = function () {
         mymap.clearMap();
         let keyword = this.searchTxt();
         let keywordMarkerArray = [];
         for (const poi of poiArray) {
-            if (isPoiContainKeyword(poi, keyword)) {
+            if (isPoiContainKeyword(poi.name, keyword)) {
                 let markerId = poi.id;
                 let mymarker = markerObj[markerId];
                 keywordMarkerArray.push(mymarker);
             }
         }
-        //地图上显示过滤后的poi点
-        // console.log(keywordMarkerArray);
-        // for (const keywordMarker of keywordMarkerArray) {
-        //     let label = keywordMarker.name;
-        //     console.log(label);
-        //     var marker = new AMap.Marker({ //加点
-        //         map: mymap,
-        //         label: {
-        //             content: label,
-        //             offset: new AMap.Pixel(20, 20)
-        //         },
-        //         animation: "AMAP_ANIMATION_DROP",
-        //         clickable: true,
-        //         position: [keywordMarker.location.lng, keywordMarker.location.lat]
-        //     });
-        // }
-        // console.log(keywordMarkerArray);
         mymap.add(keywordMarkerArray);
         mymap.setFitView();
         closeDrawer();
@@ -90,7 +117,6 @@ let ViewModel = function (searchInput, poiArray) {
         mymap.clearMap();
         let markerId = el.id;
         let mymarker = markerObj[markerId];
-        console.log(mymap);
         mymap.add(mymarker);
         mymap.setFitView();
         closeDrawer();
@@ -102,20 +128,26 @@ let ViewModel = function (searchInput, poiArray) {
             if (!marker.name) {
                 return;
             }
-            return isPoiContainKeyword(marker, searchChar);
+            return isPoiContainKeyword(marker.name, searchChar);
         });
         this.markers(filterArray);
     }
 };
 
-//判断poi名称是否包含搜索关键字
-let isPoiContainKeyword = function (marker, searchChar) {
-    let name = marker.name;
+/**
+ * @description 判断poi名称是否包含搜索关键字
+ * @param {any} name 
+ * @param {any} searchChar 
+ * @returns 
+ */
+let isPoiContainKeyword = function (name, searchChar) {
     return name.indexOf(searchChar) > -1;
 }
 
-//隐藏侧边栏
-let closeDrawer = function() {
+/**
+ * @description 隐藏侧边栏
+ */
+let closeDrawer = function () {
     document.querySelector(".mdl-layout__drawer").classList.remove("is-visible");
     document.querySelector(".mdl-layout__obfuscator").classList.remove("is-visible");
 }

@@ -5,8 +5,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 var webpack = require("webpack");
 
 module.exports = {
-  //entry: './src/js/app.js', //入口文件
-  entry: __dirname + "/src/main.js",
+  entry: __dirname + "/src/main.js",  //入口文件
   output: {
     path: __dirname + "/dist", // publicPath: '/assets/', // 指定资源文件引用的目录，也就是说用/assests/这个路径指代path，开启这个配置的话，index.html中应该要引用的路径全部改为'/assets/...'
     //path: path.resolve(__dirname, 'build'), // 指定打包之后的文件夹
@@ -39,7 +38,6 @@ module.exports = {
       template: "./index.html"
     }),
     new CopyWebpackPlugin([
-      { from: 'src/images', to: 'src/images' },
       { from: 'src/ext', to: 'ext' }
     ]),
     new webpack.HotModuleReplacementPlugin(),
